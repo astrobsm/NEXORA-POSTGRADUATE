@@ -16,7 +16,7 @@ pydantic[email]>=2.10,<3.0
 pydantic-settings>=2.7,<3.0
 
 # --- Security --------------------------------------------------------------
-pyjwt>=2.10,<3.0
+pyjwt>=2.13.0,<3.0
 argon2-cffi>=23.1
 pyotp>=2.9
 cryptography>=44.0
