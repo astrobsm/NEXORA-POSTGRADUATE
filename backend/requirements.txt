@@ -9,7 +9,7 @@ uvicorn[standard]>=0.34,<0.40
 python-multipart>=0.0.20
 
 # --- Data ------------------------------------------------------------------
-SQLAlchemy>=2.0.36,<2.1
+SQLAlchemy>=2.0.51,<2.1
 alembic>=1.14,<2.0
 psycopg[binary]>=3.2.10,<4.0        # PostgreSQL driver (production)
 pydantic[email]>=2.10,<3.0
