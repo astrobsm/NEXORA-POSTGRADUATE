@@ -58,9 +58,7 @@ class Base(DeclarativeBase):
             if column.name in exclude:
                 continue
             value = getattr(self, column.name)
-            if isinstance(value, datetime):
-                value = value.isoformat()
-            elif isinstance(value, date):
+            if isinstance(value, (datetime, date)):
                 value = value.isoformat()
             out[column.name] = value
         return out
@@ -142,6 +140,6 @@ def owned_or_shared(column: Any, owner_id: str | None) -> Any:
 
 
 @event.listens_for(Base, "before_update", propagate=True)
-def _bump_revision(mapper: Any, connection: Any, target: Any) -> None:  # noqa: ARG001
+def _bump_revision(mapper: Any, connection: Any, target: Any) -> None:
     if isinstance(target, SyncMixin):
         target.revision = (target.revision or 0) + 1

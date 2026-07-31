@@ -71,10 +71,16 @@ from app.models.enums import (
 )
 from app.models.identity import Permission, Role, RoleAssignment, SupervisorProfile, User
 from app.models.logbook import LogEntry, TeachingRecord
-from app.models.research import DissertationMilestone, ProjectSupervision, Publication, ResearchProject
+from app.models.research import (
+    DissertationMilestone,
+    ProjectSupervision,
+    Publication,
+    ResearchProject,
+)
 from app.models.tenancy import OrgUnit, Tenant
 from app.models.training import Enrolment
-from app.services import rotation as rotation_engine, scoring
+from app.services import rotation as rotation_engine
+from app.services import scoring
 
 DEMO_PASSWORD = "RtcDemo!2026"
 DEMO_TENANT_CODE = "UTH-DEMO"
@@ -484,30 +490,29 @@ def build_people(db: Session, tenant: Tenant, units: dict[str, OrgUnit],
             grant(db, user, roles[role_code], units[unit_code])
             people[local] = user
 
-            if role_code in SUPERVISOR_ROLE_CODES:
-                if db.execute(
-                    select(SupervisorProfile).where(SupervisorProfile.user_id == user.id)
-                ).scalar_one_or_none() is None:
-                    db.add(
-                        SupervisorProfile(
-                            user_id=user.id,
-                            tenant_id=tenant.id,
-                            expertise=rng.sample(
-                                ["laparoscopy", "trauma", "oncology", "paediatric surgery",
-                                 "endocrine", "hepatobiliary", "cardiology", "nephrology",
-                                 "infectious diseases", "medical education", "health systems"],
-                                k=3,
-                            ),
-                            methodologies=rng.sample(
-                                ["randomised controlled trial", "cohort study", "qualitative research",
-                                 "biostatistics", "systematic review", "health economics"],
-                                k=2,
-                            ),
-                            max_supervisees=rng.randint(3, 6),
-                            max_clinical_trainees=rng.randint(5, 9),
-                            completed_supervisions=rng.randint(0, 8),
-                        )
+            if role_code in SUPERVISOR_ROLE_CODES and db.execute(
+                select(SupervisorProfile).where(SupervisorProfile.user_id == user.id)
+            ).scalar_one_or_none() is None:
+                db.add(
+                    SupervisorProfile(
+                        user_id=user.id,
+                        tenant_id=tenant.id,
+                        expertise=rng.sample(
+                            ["laparoscopy", "trauma", "oncology", "paediatric surgery",
+                             "endocrine", "hepatobiliary", "cardiology", "nephrology",
+                             "infectious diseases", "medical education", "health systems"],
+                            k=3,
+                        ),
+                        methodologies=rng.sample(
+                            ["randomised controlled trial", "cohort study", "qualitative research",
+                             "biostatistics", "systematic review", "health economics"],
+                            k=2,
+                        ),
+                        max_supervisees=rng.randint(3, 6),
+                        max_clinical_trainees=rng.randint(5, 9),
+                        completed_supervisions=rng.randint(0, 8),
                     )
+                )
 
     for cohort, unit_code in (
         (SURGERY_TRAINEES, "DEPT-SURG"),
@@ -640,7 +645,6 @@ def build_surgery_curriculum(db: Session, tenant: Tenant, units: dict[str, OrgUn
     db.add(version)
     db.flush()
 
-    year_units = ["UNIT-SURG-GEN", "UNIT-SURG-ORTHO", "UNIT-SURG-URO", "UNIT-SURG-PAED"]
     years: dict[int, TrainingYear] = {}
     for sequence in (1, 2, 3, 4):
         level = TrainingLevel.REGISTRAR if sequence <= 2 else TrainingLevel.SENIOR_REGISTRAR
@@ -2030,7 +2034,7 @@ def build_research(db: Session, tenant: Tenant, people: dict[str, User],
                     project_id=project.id,
                     publication_type=rng.choice(["journal_article", "conference_abstract"]),
                     title=title,
-                    authors=f"{people[[k for k, v in people.items() if v.id == enrolment.trainee_id][0]].display_name} et al.",
+                    authors=f"{people[next(k for k, v in people.items() if v.id == enrolment.trainee_id)].display_name} et al.",
                     author_position=1,
                     is_corresponding=True,
                     venue=rng.choice(["Nigerian Journal of Surgery",
@@ -2052,9 +2056,8 @@ def build_research(db: Session, tenant: Tenant, people: dict[str, User],
 
 def compute_scorecards(db: Session, enrolments: list[Enrolment]) -> None:
     for enrolment in enrolments:
-        report, _ = scoring.score_and_persist(db, enrolment, trigger="scheduled")
+        scoring.score_and_persist(db, enrolment, trigger="scheduled")
     db.flush()
-    ready = sum(1 for e in enrolments if e.promotion_ready)
     log(f"scorecards: {len(enrolments)} computed "
         f"({sum(1 for e in enrolments if e.latest_rag == 'green')} green, "
         f"{sum(1 for e in enrolments if e.latest_rag == 'amber')} amber, "

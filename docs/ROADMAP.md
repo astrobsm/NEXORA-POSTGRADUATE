@@ -61,16 +61,36 @@ Be explicit about these.
 
 | Area | What exists | What is missing |
 |---|---|---|
-| **CBT / examinations** | Full schema (banks, questions with media and item statistics, blueprints, attempts, responses, integrity events); `exam_pass` requirement measurement works | Authoring UI, delivery UI, marking, adaptive selection, invigilation |
+| **CBT item media** | `media_kind`/`media_keys` on every item; the delivery path serves them and the quality gate accepts them | Object storage for the images themselves — see the object-storage row. Blocks image, ECG, radiology and histology *authoring*, not delivery |
+| **OSCE and viva** | `QuestionType.OSCE_STATION` exists; such items can be banked and reviewed | Examiner rostering to stations, station timing, per-station marksheets |
 | **Report rendering** | `GeneratedReport` table, checksums, CSV export in the client | PDF/DOCX/XLSX/PPTX generation. Printable logbooks and portfolio exports are CSV or browser print today |
-| **CME assignment** | Resources, assignments, credit ledger — the ledger is live and drives `cme_credits` | Assignment UI, reading-time tracking, resource quizzes, certificates |
+| **CME assignment** | Resources, assignments, credit ledger, structured articles, reading tracking and the four engagement scores | Assignment UI, resource quizzes, certificates |
 | **Duty rosters** | Rosters, shifts, swaps, attendance; `duty_attendance_pct` works and the demo seeds a year of call rosters | Automatic roster generation, swap approval UI, duty scoring |
 | **Multi-source feedback** | `MultiSourceFeedbackRound` with anonymity and minimum-response rules | Invitation flow, anonymous collection, aggregate release |
 | **Notifications** | Rules, templates, per-user rows, `dispatch()` writes them | Delivery worker for email/SMS/push; only in-app rows are created |
 | **WebSockets** | Config flag, dependency present | No handler. Dashboards poll |
 | **Object storage** | S3 config, `boto3` present, `object_key` fields throughout | No upload endpoint or presigned-URL issuance for *logbook attachments and generated reports*. Branding assets do not need it - they are stored in the database by design |
-| **AI assistant** | Config flags, `ai_feedback` column on exam responses | No integration |
+| **AI assistant (conversational)** | Config flags, `ai_feedback` column on exam responses | No conversational assistant. AI *authoring* is complete — see docs/ADAPTIVE_LEARNING.md |
+| **Proctoring capture** | Consent record, permission check and refusal path complete and tested | No webcam or microphone capture. The storage and retention design for biometric material is a larger piece of work than the rest of the subsystem and should not be started casually |
 | **SSO / LDAP** | `TenantIntegration` holds the configuration shape | No connector |
+
+### Adaptive learning and examinations *(new)*
+
+Complete and tested. See `docs/ADAPTIVE_LEARNING.md`.
+
+- Blueprint-driven paper assembly with non-repetition and reported relaxations
+- Sitting lifecycle, server-enforced timer, marking, per-question feedback
+- Psychometrics: KR-20, Cronbach's alpha, point-biserial, facility, SEM,
+  distractor analysis, blueprint coverage
+- Reading tracker and its four derived scores
+- Examination Readiness Score with confidence intervals and influential factors
+- Configurable examination conduct, consent-gated proctoring, post-examination
+  integrity report, retention purge
+- Individual learning plans generated from measured weakness
+- AI generation pipeline with a twelve-check quality gate, duplicate detection
+  calibrated against measured data, and an editorial gate no generated item can
+  bypass
+- Structured CME authoring with Vancouver and APA citations
 
 ---
 
@@ -117,5 +137,6 @@ that the platform deliberately does not use.
    accreditation submission.
 3. **Notification delivery worker.** The rules engine is complete and produces nothing
    anyone receives outside the app.
-4. **CBT delivery.** Large, self-contained, and the schema is already right.
+4. **Background worker.** The generation pipeline's twenty-minute service level
+   needs one, and it is the same worker the notification delivery step wants.
 5. **SSO/LDAP.** The first question every hospital IT department asks.

@@ -8,8 +8,23 @@ from typing import TYPE_CHECKING, Any
 from sqlalchemy import Boolean, Float, ForeignKey, Index, String, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.db.base import Base, IdMixin, SoftDeleteMixin, SyncMixin, TimestampMixin
-from app.models.enums import AttemptStatus, ExamMode, MediaKind, QuestionType
+from app.db.base import (
+    Base,
+    IdMixin,
+    JsonList,
+    SoftDeleteMixin,
+    SyncMixin,
+    TimestampMixin,
+)
+from app.models.enums import (
+    AttemptStatus,
+    AuthoringSource,
+    EditorialStatus,
+    ExamMode,
+    IntegrityOutcome,
+    MediaKind,
+    QuestionType,
+)
 
 if TYPE_CHECKING:
     from app.models.identity import User
@@ -96,6 +111,51 @@ class Question(Base, IdMixin, TimestampMixin, SoftDeleteMixin, SyncMixin):
     )
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
 
+    # ---- Provenance and the publication gate -----------------------------
+    #: How this item came to exist. Recorded, never inferred.
+    authoring_source: Mapped[str] = mapped_column(
+        String(24), default=AuthoringSource.HUMAN, nullable=False, index=True
+    )
+    #: Trainees only ever see PUBLISHED items. AI output enters at AI_DRAFT.
+    editorial_status: Mapped[str] = mapped_column(
+        String(24), default=EditorialStatus.DRAFT, nullable=False, index=True
+    )
+    version: Mapped[int] = mapped_column(default=1, nullable=False)
+    generation_job_id: Mapped[str | None] = mapped_column(
+        ForeignKey("generation_jobs.id", ondelete="SET NULL"), default=None, index=True
+    )
+    #: The generator's confidence, 0-1. Used to triage review, never to publish.
+    ai_confidence: Mapped[float | None] = mapped_column(Float, default=None)
+    published_at: Mapped[datetime | None] = mapped_column(default=None)
+    last_reviewed_at: Mapped[datetime | None] = mapped_column(default=None, index=True)
+    retired_at: Mapped[datetime | None] = mapped_column(default=None)
+
+    # ---- Curriculum and blueprint mapping --------------------------------
+    difficulty_band: Mapped[str | None] = mapped_column(String(24), default=None, index=True)
+    bloom_level: Mapped[str | None] = mapped_column(String(24), default=None)
+    competency_domain: Mapped[str | None] = mapped_column(String(40), default=None)
+    blueprint_category: Mapped[str | None] = mapped_column(
+        String(64), default=None, index=True
+    )
+    learning_objectives: Mapped[list[str]] = mapped_column(default=list, nullable=False)
+    evidence_level: Mapped[str | None] = mapped_column(String(24), default=None)
+    publication_year: Mapped[int | None] = mapped_column(default=None)
+    #: The CME article that teaches this item, offered with post-exam feedback.
+    cme_resource_id: Mapped[str | None] = mapped_column(
+        ForeignKey("cme_resources.id", ondelete="SET NULL"), default=None
+    )
+
+    # ---- Rotation and duplicate control ----------------------------------
+    #: Normalised stem hash. Unique-ish by construction; the index is not a
+    #: constraint because two legitimately different items can share a stem
+    #: opening, and blocking that at the database would be wrong.
+    content_hash: Mapped[str | None] = mapped_column(String(64), default=None, index=True)
+    shingles: Mapped[list[str]] = mapped_column(default=list, nullable=False)
+    #: When this item was last served to anyone, for pool rotation.
+    last_served_at: Mapped[datetime | None] = mapped_column(default=None, index=True)
+    #: Live distractor shares, blended across cohorts.
+    distractor_stats: Mapped[dict[str, Any]] = mapped_column(default=dict, nullable=False)
+
     bank: Mapped[QuestionBank] = relationship(back_populates="questions")
 
     @property
@@ -104,6 +164,19 @@ class Question(Base, IdMixin, TimestampMixin, SoftDeleteMixin, SyncMixin):
         if not self.times_served:
             return None
         return self.times_correct / self.times_served
+
+    @property
+    def is_servable(self) -> bool:
+        """Whether this item may be put in front of a trainee.
+
+        Active is not enough. An AI-generated item that no one has reviewed is
+        active and complete and still must not be served.
+        """
+        return (
+            self.is_active
+            and self.deleted_at is None
+            and self.editorial_status == EditorialStatus.PUBLISHED
+        )
 
 
 class ExamPaper(Base, IdMixin, TimestampMixin, SoftDeleteMixin):
@@ -137,6 +210,33 @@ class ExamPaper(Base, IdMixin, TimestampMixin, SoftDeleteMixin):
     closes_at: Mapped[datetime | None] = mapped_column(default=None)
     applies_to_levels: Mapped[list[str]] = mapped_column(default=list, nullable=False)
     is_published: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+
+    # ---- Conduct, adaptivity and provenance ------------------------------
+    #: Which conduct policy governs sittings of this paper. Null means the
+    #: institution default, which is itself a row rather than a constant.
+    integrity_policy_id: Mapped[str | None] = mapped_column(
+        ForeignKey("integrity_policies.id", ondelete="SET NULL"), default=None
+    )
+    #: Proportions per blueprint category, e.g. {"basic_sciences": 0.10, ...}.
+    blueprint_profile: Mapped[dict[str, Any]] = mapped_column(default=dict, nullable=False)
+    #: Proportions per difficulty band, e.g. {"easy": 0.20, "moderate": 0.40, ...}.
+    difficulty_mix: Mapped[dict[str, Any]] = mapped_column(default=dict, nullable=False)
+    #: When true the next item is chosen from the candidate's running accuracy
+    #: rather than fixed at assembly time.
+    adaptive_difficulty: Mapped[bool] = mapped_column(
+        Boolean, default=False, nullable=False
+    )
+    #: A personalised weekly paper belongs to one trainee.
+    target_user_id: Mapped[str | None] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), default=None, index=True
+    )
+    generated_by_job_id: Mapped[str | None] = mapped_column(
+        ForeignKey("generation_jobs.id", ondelete="SET NULL"), default=None, index=True
+    )
+    #: Weekly papers are issued for a specific week; the pair is what makes
+    #: "have they sat this week's CBT?" answerable without date arithmetic.
+    cycle_year: Mapped[int | None] = mapped_column(default=None)
+    cycle_week: Mapped[int | None] = mapped_column(default=None)
 
     attempts: Mapped[list[ExamAttempt]] = relationship(
         back_populates="paper", passive_deletes=True
@@ -178,8 +278,30 @@ class ExamAttempt(Base, IdMixin, TimestampMixin, SyncMixin):
     topic_breakdown: Mapped[dict[str, Any]] = mapped_column(default=dict, nullable=False)
     #: Percentile against the cohort sitting the same paper.
     cohort_percentile: Mapped[float | None] = mapped_column(Float, default=None)
-    #: Proctoring signals: tab switches, disconnections, offline periods.
+    #: Proctoring signals captured inline by an offline client. The durable
+    #: record is ``IntegrityEvent``; this is the sync landing area, drained on
+    #: submission so an offline sitting loses nothing.
     integrity_events: Mapped[list[dict[str, Any]]] = mapped_column(default=list, nullable=False)
+
+    # ---- Conduct ---------------------------------------------------------
+    #: Signed at issue, verified on every answer. A resumed sitting must present
+    #: the same token, which is what makes "one session per candidate" real
+    #: rather than advisory.
+    session_token: Mapped[str | None] = mapped_column(String(64), default=None, index=True)
+    #: Salted hashes only. The raw fingerprint and raw IP are never stored.
+    device_hash: Mapped[str | None] = mapped_column(String(64), default=None)
+    network_hash: Mapped[str | None] = mapped_column(String(64), default=None)
+    #: Set by the integrity report. Only a human may advance it past review.
+    integrity_outcome: Mapped[str] = mapped_column(
+        String(32), default=IntegrityOutcome.CLEAN, nullable=False
+    )
+    #: Per-item difficulty actually served, when the paper is adaptive.
+    #: Annotated explicitly: ``list[float]`` is not in ``Base.type_annotation_map``
+    #: and SQLAlchemy would otherwise refuse to resolve a column type for it.
+    served_difficulties: Mapped[list[float]] = mapped_column(
+        JsonList, default=list, nullable=False
+    )
+    was_auto_submitted: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
 
     paper: Mapped[ExamPaper] = relationship(back_populates="attempts")
     user: Mapped[User] = relationship(foreign_keys=[user_id])

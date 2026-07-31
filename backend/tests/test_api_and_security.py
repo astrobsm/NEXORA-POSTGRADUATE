@@ -12,7 +12,6 @@ from datetime import date, datetime, time, timedelta
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
-from app.models.enums import ValidationStatus
 from app.models.logbook import LogEntry
 from tests.conftest import TEST_PASSWORD
 

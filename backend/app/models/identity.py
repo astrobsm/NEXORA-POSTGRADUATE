@@ -195,9 +195,7 @@ class RoleAssignment(Base, IdMixin, TimestampMixin, SyncMixin):
     def is_current(self, on: date) -> bool:
         if self.starts_on and on < self.starts_on:
             return False
-        if self.ends_on and on > self.ends_on:
-            return False
-        return True
+        return not (self.ends_on and on > self.ends_on)
 
 
 class SupervisorProfile(Base, IdMixin, TimestampMixin):

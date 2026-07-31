@@ -9,7 +9,6 @@ from sqlalchemy.orm import Session
 
 from app.models.curriculum import RequirementRule
 from app.models.enums import (
-    CompetencyDomain,
     EntrustmentLevel,
     LogEntryType,
     ParticipationRole,

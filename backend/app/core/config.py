@@ -81,6 +81,39 @@ class Settings(BaseSettings):
     ai_api_key: str | None = None
     enable_websockets: bool = True
 
+    # ---- AI content generation ------------------------------------------
+    # Off unless an institution turns it on and supplies a key. With it off,
+    # the pipeline runs against a deterministic offline provider so the whole
+    # workflow — generate, validate, review, release — stays demonstrable and
+    # testable without spending anything.
+    enable_ai_generation: bool = False
+    #: Anthropic model id. Complete as written; never append a date suffix.
+    ai_model: str = "claude-opus-5"
+    #: low | medium | high | xhigh | max. Item writing is intelligence-
+    #: sensitive but not open-ended, so high is the default rather than xhigh.
+    ai_effort: str = "high"
+    #: Ceiling per request. Generous because a batch of ten fully-explained
+    #: items with per-distractor rationales is a long response; requests this
+    #: large are always streamed.
+    ai_max_output_tokens: int = 32000
+    #: Items requested per model call. Larger batches amortise the shared
+    #: knowledge context; too large and one malformed item spoils the batch.
+    ai_batch_size: int = 10
+    #: Hard ceiling on what one generation job may spend, in US dollars.
+    #: Enforced before each call, so a runaway loop stops rather than bills.
+    ai_job_cost_ceiling_usd: float = 5.0
+    #: Published rates per million tokens, used for the pre-flight estimate
+    #: and the cost recorded on the job. Override if your contract differs.
+    ai_input_cost_per_mtok: float = 5.0
+    ai_output_cost_per_mtok: float = 25.0
+    #: Ask the API to retry a safety-declined request on a fallback model.
+    #: Benign clinical content occasionally trips the classifiers; without
+    #: this a declined request simply stops.
+    ai_enable_fallbacks: bool = True
+    #: Minutes a generation job is allowed before it is reported as breaching
+    #: its service level. The specification asks for twenty.
+    ai_generation_deadline_minutes: int = 20
+
     # ---- Offline sync ---------------------------------------------------
     sync_page_size: int = 500
     sync_max_clock_skew_seconds: int = 300

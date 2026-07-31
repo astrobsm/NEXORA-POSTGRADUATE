@@ -51,7 +51,10 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install ruff
+          # Pinned deliberately. An unpinned linter turns the build red when
+          # ruff ships a new rule, not when this repository changes — which
+          # trains everyone to ignore a red build. Bump it on purpose.
+          pip install 'ruff==0.14.5'
 
       - name: Lint
         run: ruff check app tests
@@ -103,6 +106,22 @@ jobs:
           RTC_DATABASE_URL: postgresql+psycopg://rtc:rtc@localhost:5432/rtc_test
           RTC_SECRET_KEY: ci-secret-key
         run: python -m app.db.seed --no-demo
+
+      # The generation pipeline must be demonstrable with no API key. If this
+      # ever needs one, the offline provider has stopped being a real seam and
+      # the whole workflow becomes untestable in CI.
+      - name: AI pipeline runs without a provider key
+        env:
+          RTC_SECRET_KEY: ci-secret-key
+        run: |
+          test -z "${RTC_AI_API_KEY:-}" || { echo "A key leaked into CI"; exit 1; }
+          python - <<'EOF'
+          from app.services.ai.provider import describe_provider, get_provider
+          described = describe_provider(get_provider())
+          assert described["is_offline_placeholder"], described
+          assert "clinically meaningless" in described["warning"]
+          print(f"Offline provider active: {described['model']}")
+          EOF
 
   # ------------------------------------------------------------------------
   frontend:

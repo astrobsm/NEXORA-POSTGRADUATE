@@ -19,6 +19,7 @@ from app.db.base import owned_or_shared, utcnow
 from app.models.enums import NotificationChannel, NotificationPriority
 from app.models.system import Notification, NotificationRule, NotificationTemplate
 
+
 #: Well-known event codes. Institutions may add their own; unknown codes simply have no
 #: default template and fall back to the payload's title/body.
 class Events:

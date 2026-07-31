@@ -15,7 +15,6 @@ from app.models.assessment import Assessment
 from app.models.enums import (
     AuditAction,
     EnrolmentStatus,
-    PromotionOutcome,
     RagStatus,
     ValidationStatus,
 )
@@ -25,7 +24,8 @@ from app.models.research import Publication, ResearchProject
 from app.models.tenancy import OrgUnit
 from app.models.training import Enrolment, RotationAssignment
 from app.schemas.common import PromotionAssessmentOut, ScoreReportOut
-from app.services import audit, promotion as promotion_engine, scoring
+from app.services import audit, scoring
+from app.services import promotion as promotion_engine
 
 router = APIRouter()
 
@@ -589,7 +589,7 @@ def department_dashboard(
             "by_level": dict(by_level),
         },
         "performance": {
-            "rag": {k: v for k, v in rag_counts.items()},
+            "rag": dict(rag_counts.items()),
             "mean_overall_score": round(sum(scores) / len(scores), 1) if scores else None,
             "promotion_ready": sum(1 for e in active if e.promotion_ready),
         },

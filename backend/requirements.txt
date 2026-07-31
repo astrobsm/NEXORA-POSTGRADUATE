@@ -24,6 +24,13 @@ cryptography>=44.0
 # --- Object storage --------------------------------------------------------
 boto3>=1.35
 
+# --- AI-assisted authoring -------------------------------------------------
+# Optional at runtime. With RTC_ENABLE_AI_GENERATION unset the platform uses a
+# deterministic offline provider and never imports this, so a deployment that
+# does not want AI features can drop the line. It is listed here so CI installs
+# it and the Anthropic code path is type-checked and importable.
+anthropic>=0.69
+
 # --- Utilities -------------------------------------------------------------
 python-dateutil>=2.9
 httpx>=0.28

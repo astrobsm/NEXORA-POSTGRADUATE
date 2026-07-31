@@ -7,7 +7,7 @@ from datetime import timedelta
 from fastapi import APIRouter, HTTPException, status
 from sqlalchemy import select
 
-from app.api.deps import ClientMeta, CurrentPrincipal, DbSession, build_principal
+from app.api.deps import ClientMeta, CurrentPrincipal, DbSession
 from app.core.config import settings
 from app.core.security import (
     PasswordPolicyError,

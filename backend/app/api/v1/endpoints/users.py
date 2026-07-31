@@ -6,13 +6,13 @@ from fastapi import APIRouter, HTTPException, Query, status
 from sqlalchemy import func, select
 
 from app.api.deps import ClientMeta, CurrentPrincipal, DbSession, TenantId
-from app.db.base import owned_or_shared
 from app.core.rbac import PERMISSIONS, TRAINEE_ROLE_CODES
 from app.core.security import (
     PasswordPolicyError,
     enforce_password_policy,
     hash_password,
 )
+from app.db.base import owned_or_shared
 from app.models.enums import AuditAction, UserStatus
 from app.models.identity import Role, RoleAssignment, SupervisorProfile, User
 from app.models.tenancy import OrgUnit

@@ -21,11 +21,24 @@ ignore = [
     "E501",    # line length is enforced by the formatter, not the linter
     "B008",    # FastAPI's Depends()/Query() in defaults is the documented idiom
     "RUF012",  # ClassVar annotations are noise on SQLAlchemy declarative models
+    # The "ambiguous unicode" family. This codebase deliberately uses en dashes
+    # in prose, × in dimensions and ’ in contractions, because the strings are
+    # read by clinicians in a user interface, not by a compiler. Replacing them
+    # with ASCII would make the product worse to satisfy a linter.
+    "RUF001",
+    "RUF002",
+    "RUF003",
+    # Sequence concatenation. `a + [b]` is clearer than `[*a, b]` when the
+    # intent is "this list plus one more", and the rule fires on every
+    # permission-set definition in app/core/rbac.py.
+    "RUF005",
 ]
 
 [tool.ruff.lint.per-file-ignores]
 "app/db/seed.py" = ["C901"]        # the seeder is intentionally long and linear
 "app/models/*.py" = ["RUF012"]
+# Tests unpack tuples for readability even when only one element is asserted on.
+"tests/*.py" = ["RUF059"]
 
 [tool.ruff.format]
 quote-style = "double"

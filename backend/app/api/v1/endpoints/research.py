@@ -8,7 +8,6 @@ from fastapi import APIRouter, HTTPException, Query, status
 from sqlalchemy import func, select
 
 from app.api.deps import ClientMeta, CurrentPrincipal, DbSession, TenantId
-from app.db.base import utcnow
 from app.models.enums import (
     DISSERTATION_STAGE_ORDER,
     ApprovalStatus,
@@ -23,7 +22,7 @@ from app.models.research import (
     SupervisionMeeting,
 )
 from app.models.training import Enrolment
-from app.schemas.common import CandidateOut, Page
+from app.schemas.common import CandidateOut
 from app.services import allocation, audit
 
 router = APIRouter()

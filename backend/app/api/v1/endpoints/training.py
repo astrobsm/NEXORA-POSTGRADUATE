@@ -16,7 +16,6 @@ from app.models.enums import (
     AuditAction,
     CurriculumStatus,
     EnrolmentStatus,
-    RotationStatus,
 )
 from app.models.identity import User
 from app.models.tenancy import OrgUnit
@@ -32,7 +31,8 @@ from app.schemas.training import (
     RotationExtendRequest,
     RotationPlanOut,
 )
-from app.services import audit, rotation as rotation_engine
+from app.services import audit
+from app.services import rotation as rotation_engine
 
 router = APIRouter()
 

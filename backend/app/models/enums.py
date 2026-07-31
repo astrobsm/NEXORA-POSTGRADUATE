@@ -552,3 +552,236 @@ class AuditAction(StrEnum):
     REJECT = "reject"
     SYNC = "sync"
     CONFIG_CHANGE = "config_change"
+
+
+# --------------------------------------------------------------------------
+# Adaptive learning — difficulty, authoring provenance, editorial workflow
+# --------------------------------------------------------------------------
+class DifficultyBand(StrEnum):
+    """The five bands the specification names, ordered easiest to hardest.
+
+    A band is a *label for a facility range*, not a second source of truth. The
+    numeric ``Question.difficulty`` stays authoritative and is what the paper
+    assembler filters on; the band exists so a consultant can ask for
+    "fellowship standard" items without knowing that means 0.80-1.00.
+    """
+
+    EASY = "easy"
+    MODERATE = "moderate"
+    ADVANCED = "advanced"
+    CONSULTANT = "consultant"
+    FELLOWSHIP = "fellowship"
+
+
+class BloomLevel(StrEnum):
+    REMEMBER = "remember"
+    UNDERSTAND = "understand"
+    APPLY = "apply"
+    ANALYSE = "analyse"
+    EVALUATE = "evaluate"
+    CREATE = "create"
+
+
+class AuthoringSource(StrEnum):
+    """Where an item or article came from. Never inferred — always recorded."""
+
+    HUMAN = "human"
+    AI_GENERATED = "ai_generated"
+    AI_ASSISTED = "ai_assisted"     # human wrote it, AI edited or expanded it
+    IMPORTED = "imported"
+
+
+class EditorialStatus(StrEnum):
+    """The publication gate.
+
+    AI-generated content enters at ``ai_draft`` and becomes visible to trainees
+    only once a human holding ``cbt.question.review`` moves it to ``published``.
+    This is the mechanism behind the requirement that AI material be clearly
+    identified as AI-assisted until reviewed.
+    """
+
+    DRAFT = "draft"
+    AI_DRAFT = "ai_draft"
+    IN_REVIEW = "in_review"
+    CHANGES_REQUESTED = "changes_requested"
+    APPROVED = "approved"
+    PUBLISHED = "published"
+    RETIRED = "retired"
+    REJECTED = "rejected"
+
+
+class EvidenceLevel(StrEnum):
+    """Oxford CEBM levels, used to rank retrieved knowledge before generation."""
+
+    LEVEL_1A = "1a"     # systematic review of randomised trials
+    LEVEL_1B = "1b"     # individual randomised trial
+    LEVEL_2A = "2a"     # systematic review of cohort studies
+    LEVEL_2B = "2b"     # individual cohort study
+    LEVEL_3 = "3"       # case-control
+    LEVEL_4 = "4"       # case series
+    LEVEL_5 = "5"       # expert opinion
+    GUIDELINE = "guideline"
+    TEXTBOOK = "textbook"
+
+
+class CitationStyle(StrEnum):
+    VANCOUVER = "vancouver"
+    APA = "apa"
+
+
+# --------------------------------------------------------------------------
+# Reading engagement
+# --------------------------------------------------------------------------
+class ReadingEventKind(StrEnum):
+    OPENED = "opened"
+    HEARTBEAT = "heartbeat"       # still on the page; carries seconds and scroll depth
+    SCROLLED = "scrolled"
+    SECTION_COMPLETED = "section_completed"
+    HIGHLIGHTED = "highlighted"
+    NOTE_ADDED = "note_added"
+    BOOKMARKED = "bookmarked"
+    DOWNLOADED = "downloaded"
+    VIDEO_STARTED = "video_started"
+    VIDEO_COMPLETED = "video_completed"
+    REFERENCE_FOLLOWED = "reference_followed"
+    CLOSED = "closed"
+    REVISITED = "revisited"
+
+
+class LearningIndex(StrEnum):
+    """The named indices the AI performance dashboard reports."""
+
+    KNOWLEDGE = "knowledge"
+    CLINICAL_COMPETENCY = "clinical_competency"
+    PROCEDURAL_COMPETENCY = "procedural_competency"
+    CRITICAL_THINKING = "critical_thinking"
+    CONSISTENCY = "consistency"
+    IMPROVEMENT_RATE = "improvement_rate"
+    LEARNING_VELOCITY = "learning_velocity"
+    RETENTION = "retention"
+    EXAMINATION_PREDICTION = "examination_prediction"
+
+
+class ReadinessCategory(StrEnum):
+    """The five bands, with the boundaries the specification fixes."""
+
+    OUTSTANDING = "outstanding"                      # 90-100
+    EXAMINATION_READY = "examination_ready"          # 80-89
+    NEARLY_READY = "nearly_ready"                    # 70-79
+    NEEDS_IMPROVEMENT = "needs_improvement"          # 60-69
+    INTENSIVE_REMEDIATION = "intensive_remediation"  # below 60
+
+
+# --------------------------------------------------------------------------
+# Examination integrity
+#
+# Everything here is *observation*, not accusation. AI-assisted behaviour
+# flagging is advisory only and never the sole basis for a penalty; camera and
+# microphone proctoring are optional and require consent. Both constraints are
+# enforced in ``app.services.integrity`` rather than left to convention.
+# --------------------------------------------------------------------------
+class IntegrityEventKind(StrEnum):
+    FULLSCREEN_ENTERED = "fullscreen_entered"
+    FULLSCREEN_EXITED = "fullscreen_exited"
+    WINDOW_BLURRED = "window_blurred"
+    WINDOW_FOCUSED = "window_focused"
+    TAB_HIDDEN = "tab_hidden"
+    TAB_VISIBLE = "tab_visible"
+    COPY_BLOCKED = "copy_blocked"
+    PASTE_BLOCKED = "paste_blocked"
+    CUT_BLOCKED = "cut_blocked"
+    PRINT_BLOCKED = "print_blocked"
+    CONTEXT_MENU_BLOCKED = "context_menu_blocked"
+    DEVTOOLS_SHORTCUT_BLOCKED = "devtools_shortcut_blocked"
+    NETWORK_LOST = "network_lost"
+    NETWORK_RESTORED = "network_restored"
+    SESSION_RESUMED = "session_resumed"
+    CONCURRENT_SESSION_REFUSED = "concurrent_session_refused"
+    DEVICE_CHANGED = "device_changed"
+    IP_CHANGED = "ip_changed"
+    RAPID_RESPONSE = "rapid_response"
+    IDLE_PERIOD = "idle_period"
+    AUTO_SUBMITTED = "auto_submitted"
+
+
+class IntegritySeverity(StrEnum):
+    INFO = "info"
+    NOTICE = "notice"
+    CONCERN = "concern"
+
+
+class IntegrityOutcome(StrEnum):
+    """What a human decided. The engine only ever writes ``pending_review``."""
+
+    CLEAN = "clean"
+    PENDING_REVIEW = "pending_review"
+    REVIEWED_NO_ACTION = "reviewed_no_action"
+    REVIEWED_EXPLAINED = "reviewed_explained"
+    REFERRED = "referred"
+
+
+class ProctoringMode(StrEnum):
+    NONE = "none"
+    EVENT_LOGGING = "event_logging"       # focus and clipboard events only
+    CAMERA_CONSENT = "camera_consent"     # opt-in webcam stills
+    FULL_CONSENT = "full_consent"         # opt-in webcam and microphone
+
+
+# --------------------------------------------------------------------------
+# AI generation pipeline
+# --------------------------------------------------------------------------
+class GenerationStage(StrEnum):
+    """The ordered stages of the weekly-CBT workflow.
+
+    Stored on the job so a stalled run says *where* it stalled.
+    """
+
+    QUEUED = "queued"
+    RETRIEVING_KNOWLEDGE = "retrieving_knowledge"
+    GENERATING = "generating"
+    QUALITY_VALIDATION = "quality_validation"
+    BLUEPRINT_VALIDATION = "blueprint_validation"
+    DUPLICATE_DETECTION = "duplicate_detection"
+    DIFFICULTY_BALANCING = "difficulty_balancing"
+    ASSEMBLING = "assembling"
+    AWAITING_REVIEW = "awaiting_review"
+    RELEASED = "released"
+    FAILED = "failed"
+    CANCELLED = "cancelled"
+
+
+class GenerationTrigger(StrEnum):
+    MANUAL = "manual"
+    SCHEDULED = "scheduled"
+    PERSONALISED = "personalised"     # per trainee, from measured weak areas
+    REMEDIATION = "remediation"
+
+
+class QualityCheck(StrEnum):
+    """Automated checks every generated item must pass before it can be served."""
+
+    EXACTLY_ONE_CORRECT = "exactly_one_correct"
+    OPTION_COUNT = "option_count"
+    NO_ABSOLUTE_TERMS = "no_absolute_terms"
+    NO_ALL_OF_THE_ABOVE = "no_all_of_the_above"
+    HOMOGENEOUS_OPTIONS = "homogeneous_options"
+    STEM_LENGTH = "stem_length"
+    NO_CLUE_IN_STEM = "no_clue_in_stem"
+    EXPLANATION_PRESENT = "explanation_present"
+    DISTRACTOR_RATIONALES_PRESENT = "distractor_rationales_present"
+    REFERENCES_PRESENT = "references_present"
+    CURRICULUM_MAPPED = "curriculum_mapped"
+    NO_PATIENT_IDENTIFIERS = "no_patient_identifiers"
+    NOT_DUPLICATE = "not_duplicate"
+
+
+class RemediationActionKind(StrEnum):
+    READ_ARTICLE = "read_article"
+    PRACTICE_QUESTIONS = "practice_questions"
+    WATCH_VIDEO = "watch_video"
+    REVIEW_GUIDELINE = "review_guideline"
+    LOG_PROCEDURE = "log_procedure"
+    PRESENT_CASE = "present_case"
+    ATTEND_ACTIVITY = "attend_activity"
+    MENTOR_SESSION = "mentor_session"
+    SKILL_LAB = "skill_lab"

@@ -29,7 +29,7 @@ from dateutil.relativedelta import relativedelta
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from app.models.academic import ActivityParticipant, AcademicActivity, ConferenceRecord
+from app.models.academic import AcademicActivity, ActivityParticipant, ConferenceRecord
 from app.models.assessment import Assessment, AssessmentTemplate, CompetencyRating
 from app.models.cbt import ExamAttempt
 from app.models.cme import CmeCreditLedger
@@ -799,12 +799,11 @@ def _normalise_target(rule: RequirementRule) -> float:
             return float(rule.target_value)
         if level := params.get("level"):
             return float(ENTRUSTMENT_ORDER.get(level, rule.target_value))
-    if rule.kind == RequirementKind.DISSERTATION_STAGE:
-        if stage := params.get("stage"):
-            try:
-                return float(DISSERTATION_STAGE_ORDER.index(stage))
-            except ValueError:
-                return float(rule.target_value)
+    if rule.kind == RequirementKind.DISSERTATION_STAGE and (stage := params.get("stage")):
+        try:
+            return float(DISSERTATION_STAGE_ORDER.index(stage))
+        except ValueError:
+            return float(rule.target_value)
     return float(rule.target_value)
 
 

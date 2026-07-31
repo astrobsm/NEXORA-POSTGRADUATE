@@ -10,7 +10,7 @@ from __future__ import annotations
 from datetime import date
 
 from fastapi import APIRouter, HTTPException, Query, status
-from sqlalchemy import func, select
+from sqlalchemy import select
 
 from app.api.deps import ClientMeta, CurrentPrincipal, DbSession, TenantId
 from app.db.base import owned_or_shared

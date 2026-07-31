@@ -8,13 +8,12 @@ from __future__ import annotations
 
 from logging.config import fileConfig
 
-from alembic import context
 from sqlalchemy import engine_from_config, pool
-
-from app.core.config import settings
 
 # Importing the model package registers every table on Base.metadata.
 import app.models  # noqa: F401
+from alembic import context
+from app.core.config import settings
 from app.db.base import Base, UtcDateTime
 
 config = context.config

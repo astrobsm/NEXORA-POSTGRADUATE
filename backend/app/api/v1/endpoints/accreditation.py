@@ -17,7 +17,8 @@ from app.models.analytics import (
 )
 from app.models.enums import AuditAction
 from app.models.tenancy import OrgUnit
-from app.services import accreditation as engine, audit
+from app.services import accreditation as engine
+from app.services import audit
 
 router = APIRouter()
 
@@ -163,7 +164,7 @@ def generate_review(
     end = period_end or date.today()
     start = period_start or (end - timedelta(days=365))
 
-    review, results = engine.generate_review(
+    review, _results = engine.generate_review(
         db, org_unit=unit, profile=profile, period_start=start, period_end=end,
         generated_by_id=principal.id, persist=persist,
     )

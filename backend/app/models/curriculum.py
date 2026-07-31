@@ -15,7 +15,6 @@ from app.models.enums import (
     Discipline,
     EntrustmentLevel,
     ProgrammeType,
-    RequirementKind,
     RequirementOperator,
     RequirementScope,
     RequirementSeverity,

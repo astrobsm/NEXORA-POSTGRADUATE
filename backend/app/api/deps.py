@@ -59,7 +59,7 @@ class Principal:
 
     def require(self, permission: str, *, org_unit_id: str | None = None) -> None:
         if not self.has(permission, org_unit_id=org_unit_id):
-            where = f" at the requested scope" if org_unit_id else ""
+            where = " at the requested scope" if org_unit_id else ""
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail=f"Permission '{permission}' is required{where}.",

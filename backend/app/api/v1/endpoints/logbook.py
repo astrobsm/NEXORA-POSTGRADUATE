@@ -61,9 +61,7 @@ def _can_read_entry(db, principal, entry: LogEntry) -> bool:
         return True
     if principal.has("logbook.entry.read.any", org_unit_id=entry.org_unit_id):
         return True
-    if principal.has("logbook.entry.read.supervised") and entry.supervisor_id == principal.id:
-        return True
-    return False
+    return bool(principal.has("logbook.entry.read.supervised") and entry.supervisor_id == principal.id)
 
 
 def _serialise(db, entry: LogEntry) -> LogEntryOut:
@@ -88,7 +86,7 @@ def create_entry(
     consultant validates them — the platform never lets unvalidated activity inflate a
     trainee's numbers."""
     principal.require("logbook.entry.create")
-    enrolment = _own_enrolment(db, principal, enrolment_id or payload.rotation_assignment_id and None)
+    enrolment = _own_enrolment(db, principal, enrolment_id or (payload.rotation_assignment_id and None))
 
     # Idempotent replay of an offline-created entry.
     if payload.client_uuid:

@@ -16,6 +16,9 @@ const Competencies = lazy(() => import('./pages/Competencies'))
 const Academic = lazy(() => import('./pages/Academic'))
 const Research = lazy(() => import('./pages/Research'))
 const Analytics = lazy(() => import('./pages/Analytics'))
+const Cbt = lazy(() => import('./pages/Cbt'))
+const Readiness = lazy(() => import('./pages/Readiness'))
+const QuestionReview = lazy(() => import('./pages/QuestionReview'))
 const Promotion = lazy(() => import('./pages/Promotion'))
 const Accreditation = lazy(() => import('./pages/Accreditation'))
 const Curriculum = lazy(() => import('./pages/Curriculum'))
@@ -71,6 +74,9 @@ export default function App() {
           <Route path="academic" element={<Academic />} />
           <Route path="research" element={<Research />} />
           <Route path="analytics" element={<Analytics />} />
+          <Route path="cbt" element={<Cbt />} />
+          <Route path="readiness" element={<Readiness />} />
+          <Route path="question-review" element={<QuestionReview />} />
           <Route path="promotion" element={<Promotion />} />
           <Route path="accreditation" element={<Accreditation />} />
           <Route path="curriculum" element={<Curriculum />} />

@@ -100,6 +100,11 @@ PERMISSIONS: tuple[PermissionSpec, ...] = (
     _p("exam.paper.manage", "Assemble and schedule papers", C.EXAM),
     _p("exam.attempt.take", "Sit examinations", C.EXAM),
     _p("exam.result.read.any", "View any candidate results within scope", C.EXAM),
+    _p("exam.question.review", "Approve or reject questions for publication", C.EXAM),
+    _p("exam.question.generate", "Request AI-assisted question generation", C.EXAM),
+    _p("exam.psychometrics.read", "View item and paper psychometrics", C.EXAM),
+    _p("exam.integrity.configure", "Configure examination conduct policy", C.EXAM),
+    _p("exam.integrity.review", "Review examination integrity reports", C.EXAM),
     # -- CME --------------------------------------------------------------
     _p("cme.resource.manage", "Curate CME resources", C.CME),
     _p("cme.assignment.manage", "Assign CME to trainees", C.CME),
@@ -222,6 +227,14 @@ _DEPARTMENT_LEADERSHIP = _FACULTY_BASE + (
     "exam.bank.manage",
     "exam.paper.manage",
     "exam.result.read.any",
+    # A consultant is the editorial gate for AI-generated items, so the review
+    # permission has to sit at department level. Restricting it to institution
+    # leadership would make the gate a bottleneck nobody could clear weekly,
+    # and a gate nobody clears is a gate that gets bypassed.
+    "exam.question.review",
+    "exam.question.generate",
+    "exam.psychometrics.read",
+    "exam.integrity.review",
     "cme.resource.manage",
     "cme.assignment.manage",
     "logbook.catalogue.manage",
@@ -240,6 +253,10 @@ _INSTITUTION_LEADERSHIP = _DEPARTMENT_LEADERSHIP + (
     # the "configure, don't code" promise would fail at the first custom role.
     "identity.role.manage",
     "tenancy.settings.manage",
+    # Examination conduct policy is an institutional decision, not a
+    # departmental one: how candidates are monitored, whether cameras are used
+    # at all, and how long telemetry is kept are governance questions.
+    "exam.integrity.configure",
     "curriculum.publish",
     "curriculum.specialty.manage",
     "analytics.institution.read",

@@ -29,6 +29,9 @@ import {
   Sun,
   Users,
   X,
+  ClipboardCheck,
+  FileCheck2,
+  Target,
 } from 'lucide-react'
 import { useAuth } from '@/lib/auth'
 import { useBranding } from '@/lib/branding'
@@ -62,6 +65,8 @@ const NAV: { section: string; items: NavItem[] }[] = [
     section: 'Academic',
     items: [
       { to: '/academic', label: 'Activities & CME', icon: Activity, permissions: ['academic.activity.read'] },
+      { to: '/cbt', label: 'Computer-based tests', icon: ClipboardCheck, permissions: ['exam.attempt.take'] },
+      { to: '/readiness', label: 'Examination readiness', icon: Target, requiresEnrolment: true },
       { to: '/research', label: 'Research', icon: FlaskConical, permissions: ['research.project.create', 'research.project.read.any'] },
     ],
   },
@@ -71,6 +76,7 @@ const NAV: { section: string; items: NavItem[] }[] = [
       { to: '/analytics', label: 'Analytics', icon: Gauge, permissions: ['analytics.department.read', 'analytics.institution.read'] },
       { to: '/promotion', label: 'Promotion', icon: Award, permissions: ['promotion.readiness.read'] },
       { to: '/accreditation', label: 'Accreditation', icon: Building2, permissions: ['accreditation.report.generate'] },
+      { to: '/question-review', label: 'Question review', icon: FileCheck2, permissions: ['exam.question.review'] },
     ],
   },
   {

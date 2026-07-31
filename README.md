@@ -151,8 +151,9 @@ the whole interface and the installed app icon follow.
 |---|---|
 | [ARCHITECTURE.md](docs/ARCHITECTURE.md) | System design, boundaries, offline strategy |
 | [CONFIGURATION.md](docs/CONFIGURATION.md) | **The rules engine — how policy changes without code** |
-| [DATA_MODEL.md](docs/DATA_MODEL.md) | 63 tables, ER diagrams, indexing |
+| [DATA_MODEL.md](docs/DATA_MODEL.md) | 80 tables, ER diagrams, indexing |
 | [API.md](docs/API.md) | REST reference and conventions |
+| [ADAPTIVE_LEARNING.md](docs/ADAPTIVE_LEARNING.md) | **CBT, readiness, examination conduct, AI authoring and its editorial gate** |
 | [DEPLOYMENT_VERCEL.md](docs/DEPLOYMENT_VERCEL.md) | Vercel + Supabase, step by step |
 | [DEPLOYMENT.md](docs/DEPLOYMENT.md) | Docker, Kubernetes, backups, sizing |
 | [SECURITY.md](docs/SECURITY.md) | RBAC, threat model, NDPR/GDPR posture |

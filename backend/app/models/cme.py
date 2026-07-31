@@ -9,7 +9,12 @@ from sqlalchemy import Boolean, Date, Float, ForeignKey, Index, String, Text, Un
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base, IdMixin, SoftDeleteMixin, SyncMixin, TimestampMixin
-from app.models.enums import CmeResourceKind, CmeStatus
+from app.models.enums import (
+    AuthoringSource,
+    CmeResourceKind,
+    CmeStatus,
+    EditorialStatus,
+)
 
 if TYPE_CHECKING:
     from app.models.identity import User
@@ -63,9 +68,64 @@ class CmeResource(Base, IdMixin, TimestampMixin, SoftDeleteMixin, SyncMixin):
         ForeignKey("users.id", ondelete="SET NULL"), default=None
     )
 
+    # ---- Provenance and the publication gate -----------------------------
+    authoring_source: Mapped[str] = mapped_column(
+        String(24), default=AuthoringSource.HUMAN, nullable=False, index=True
+    )
+    #: Trainees are only ever assigned PUBLISHED resources. AI-written articles
+    #: enter at AI_DRAFT and stay invisible until a consultant approves them.
+    editorial_status: Mapped[str] = mapped_column(
+        String(24), default=EditorialStatus.PUBLISHED, nullable=False, index=True
+    )
+    version: Mapped[int] = mapped_column(default=1, nullable=False)
+    reviewed_by_id: Mapped[str | None] = mapped_column(
+        ForeignKey("users.id", ondelete="SET NULL"), default=None
+    )
+    reviewed_at: Mapped[datetime | None] = mapped_column(default=None)
+    review_notes: Mapped[str | None] = mapped_column(Text, default=None)
+    generation_job_id: Mapped[str | None] = mapped_column(
+        ForeignKey("generation_jobs.id", ondelete="SET NULL"), default=None
+    )
+    ai_confidence: Mapped[float | None] = mapped_column(Float, default=None)
+
+    # ---- Structured article body -----------------------------------------
+    #: The full article, section by section, in the order the curriculum
+    #: prescribes. Stored as an ordered list rather than 26 columns so an
+    #: institution can drop sections that do not apply to its discipline —
+    #: a radiology article has no operative technique — without a migration.
+    #: [{"key": "anatomy", "title": "Anatomy", "body": "...", "order": 4}, ...]
+    sections: Mapped[list[dict[str, Any]]] = mapped_column(default=list, nullable=False)
+    #: Structured references, each carrying both citation renderings and a DOI.
+    #: [{"n": 1, "vancouver": "...", "apa": "...", "doi": "...", "source": "..."}]
+    reference_entries: Mapped[list[dict[str, Any]]] = mapped_column(
+        default=list, nullable=False
+    )
+    learning_objectives: Mapped[list[str]] = mapped_column(default=list, nullable=False)
+    clinical_pearls: Mapped[list[str]] = mapped_column(default=list, nullable=False)
+    #: Areas examiners return to, used to weight generated items toward them.
+    frequently_tested_areas: Mapped[list[str]] = mapped_column(default=list, nullable=False)
+    landmark_trials: Mapped[list[dict[str, Any]]] = mapped_column(
+        default=list, nullable=False
+    )
+    #: Word count of the assembled body, used to sanity-check reading time.
+    word_count: Mapped[int] = mapped_column(default=0, nullable=False)
+
     assignments: Mapped[list[CmeAssignment]] = relationship(
         back_populates="resource", passive_deletes=True
     )
+
+    @property
+    def is_servable(self) -> bool:
+        """Whether this resource may be assigned or shown to a trainee."""
+        return (
+            self.is_active
+            and self.deleted_at is None
+            and self.editorial_status == EditorialStatus.PUBLISHED
+        )
+
+    @property
+    def section_keys(self) -> list[str]:
+        return [str(s.get("key")) for s in self.sections if s.get("key")]
 
 
 class CmeAssignment(Base, IdMixin, TimestampMixin, SyncMixin):

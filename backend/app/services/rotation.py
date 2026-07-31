@@ -15,7 +15,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.db.base import utcnow
-from app.models.curriculum import CurriculumVersion, RotationTemplate, TrainingYear
+from app.models.curriculum import CurriculumVersion, RotationTemplate
 from app.models.enums import (
     RequirementScope,
     RequirementSeverity,

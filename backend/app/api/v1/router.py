@@ -10,7 +10,9 @@ from app.api.v1.endpoints import (
     analytics,
     assessments,
     auth,
+    cbt,
     curriculum,
+    learning,
     logbook,
     meta,
     research,
@@ -34,4 +36,8 @@ api_router.include_router(academic.router, prefix="/academic", tags=["Academic a
 api_router.include_router(research.router, prefix="/research", tags=["Research & dissertation"])
 api_router.include_router(analytics.router, prefix="/analytics", tags=["Analytics & promotion"])
 api_router.include_router(accreditation.router, prefix="/accreditation", tags=["Accreditation"])
+api_router.include_router(cbt.router, prefix="/cbt", tags=["Computer-based testing"])
+api_router.include_router(
+    learning.router, prefix="/learning", tags=["Reading, readiness & remediation"]
+)
 api_router.include_router(sync.router, prefix="/sync", tags=["Offline synchronisation"])

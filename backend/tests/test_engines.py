@@ -2,16 +2,15 @@
 
 from __future__ import annotations
 
+import itertools
 from datetime import date, datetime, time, timedelta
 
 import pytest
 from sqlalchemy.orm import Session
 
-from app.models.assessment import CompetencyRating
 from app.models.curriculum import RequirementRule
 from app.models.enums import (
     EnrolmentStatus,
-    EntrustmentLevel,
     LeaveType,
     LogEntryType,
     ParticipationRole,
@@ -35,7 +34,7 @@ class TestRotationEngine:
         planned = rotation.plan_schedule(db, institution["enrolment"], to_year=2)
         assert len(planned) == 4          # two rotations in each of two years
 
-        for earlier, later in zip(planned, planned[1:], strict=False):
+        for earlier, later in itertools.pairwise(planned):
             assert later.start_date == earlier.end_date + timedelta(days=1)
 
     def test_plan_assigns_a_supervisor_with_reasoning(self, db: Session, institution: dict):
@@ -192,8 +191,9 @@ class TestSupervisorAllocation:
         assert any("Expertise match" in reason for reason in ranked[0].reasons)
 
     def test_conflict_of_interest_excludes_a_supervisor(self, db: Session, institution: dict):
-        from app.models.identity import SupervisorProfile
         from sqlalchemy import select
+
+        from app.models.identity import SupervisorProfile
 
         profile = db.execute(
             select(SupervisorProfile).where(
