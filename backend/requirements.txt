@@ -4,7 +4,7 @@
 # `pip freeze`) is what deployments should install from.
 
 # --- Web framework ---------------------------------------------------------
-fastapi>=0.115,<0.121
+fastapi>=0.140.13,<0.141
 uvicorn[standard]>=0.34,<0.40
 python-multipart>=0.0.20
 
