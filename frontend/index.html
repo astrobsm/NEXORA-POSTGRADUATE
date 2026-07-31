@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en-NG">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Postgraduate Medical Training Console</title>
+    <meta
+      name="description"
+      content="Offline-first competency-based medical education platform for postgraduate residency, internship, fellowship and continuing medical education. Created and managed by NEXORA Technologies."
+    />
+    <meta name="theme-color" content="#166534" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0a0d0b" media="(prefers-color-scheme: dark)" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/icon-192.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="RTC" />
+    <meta name="author" content="NEXORA Technologies" />
+    <meta name="application-name" content="Postgraduate Medical Training Console" />
+    <script>
+      // Apply the stored theme before first paint so the app never flashes the
+      // wrong surface — a real irritation on a ward round at 3am.
+      (function () {
+        try {
+          var stored = localStorage.getItem('rtc.theme');
+          if (stored === 'dark' || stored === 'light') {
+            document.documentElement.setAttribute('data-theme', stored);
+          }
+        } catch (e) {
+          /* private browsing — fall back to the OS preference */
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>
+      <p style="font: 16px system-ui; padding: 2rem">
+        The Residency Training Console needs JavaScript enabled.
+      </p>
+    </noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,24 @@
+# --------------------------------------------------------------------------
+# Vercel serverless runtime dependencies.
+#
+# Deliberately leaner than backend/requirements.txt: every megabyte here is
+# unpacked on each cold start, so the development and test tooling is excluded,
+# as is uvicorn (Vercel provides the ASGI server) and boto3 (object storage is
+# not reachable from the function).
+#
+# Keep the version ranges in step with backend/requirements.txt.
+# --------------------------------------------------------------------------
+
+fastapi>=0.115,<0.121
+python-multipart>=0.0.20
+
+SQLAlchemy>=2.0.36,<2.1
+psycopg[binary]>=3.2.10,<4.0
+pydantic[email]>=2.10,<3.0
+pydantic-settings>=2.7,<3.0
+
+pyjwt>=2.10,<3.0
+argon2-cffi>=23.1
+pyotp>=2.9
+
+python-dateutil>=2.9

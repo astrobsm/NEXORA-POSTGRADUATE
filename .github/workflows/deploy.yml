@@ -1,0 +1,122 @@
+# Vercel deployment.
+#
+# Only runs after CI passes. Vercel's own Git integration is disabled in
+# vercel.json (`github.silent`) so that a red test suite cannot reach production.
+#
+# Created and managed by NEXORA Technologies.
+
+name: Deploy
+
+on:
+  workflow_run:
+    workflows: ['CI']
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Deployment target
+        type: choice
+        options: [preview, production]
+        default: preview
+
+concurrency:
+  group: deploy-${{ github.event.inputs.target || 'production' }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy to Vercel
+    runs-on: ubuntu-latest
+    # A deployment triggered by CI only proceeds if CI actually passed.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.conclusion == 'success'
+    environment:
+      name: ${{ github.event.inputs.target == 'preview' && 'staging' || 'production' }}
+      url: ${{ steps.deploy.outputs.url }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - run: npm install --global vercel@latest
+
+      - name: Pull Vercel environment
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          vercel pull --yes \
+            --environment=${{ github.event.inputs.target == 'preview' && 'preview' || 'production' }} \
+            --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Build
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          vercel build ${{ github.event.inputs.target != 'preview' && '--prod' || '' }} \
+            --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy
+        id: deploy
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          url=$(vercel deploy --prebuilt \
+            ${{ github.event.inputs.target != 'preview' && '--prod' || '' }} \
+            --token=${{ secrets.VERCEL_TOKEN }})
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          echo "Deployed to $url"
+
+      - name: Smoke-test the deployment
+        run: |
+          set -euo pipefail
+          url="${{ steps.deploy.outputs.url }}"
+
+          # Vercel needs a moment before a fresh deployment answers.
+          for attempt in $(seq 1 20); do
+            if curl -fsS "$url/health" >/dev/null 2>&1; then break; fi
+            sleep 5
+          done
+
+          echo "Health:"
+          curl -fsS "$url/health" | tee /tmp/health.json
+          echo ""
+
+          status=$(jq -r '.status' /tmp/health.json)
+          database=$(jq -r '.database' /tmp/health.json)
+
+          if [ "$database" != "ok" ]; then
+            echo "::error::The API is up but cannot reach the database."
+            echo "::error::Check RTC_DATABASE_URL in Vercel points at the TRANSACTION"
+            echo "::error::pooler (port 6543) and that the password is URL-encoded."
+            exit 1
+          fi
+
+          echo "Serving the app shell:"
+          curl -fsS "$url/" | grep -q "Postgraduate Medical Training Console" \
+            || { echo "::error::The app shell did not render."; exit 1; }
+
+          echo "All checks passed."
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "### Deployment"
+            echo ""
+            echo "- URL: ${{ steps.deploy.outputs.url }}"
+            echo "- Target: \`${{ github.event.inputs.target || 'production' }}\`"
+            echo "- Commit: \`${{ github.sha }}\`"
+            echo ""
+            echo "Migrations are **not** applied by this workflow. If this release"
+            echo "includes a schema change, run **Migrate database** first."
+            echo ""
+            echo "_Created and managed by NEXORA Technologies._"
+          } >> "$GITHUB_STEP_SUMMARY"

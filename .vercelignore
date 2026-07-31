@@ -1,0 +1,36 @@
+# Files Vercel should not upload.
+#
+# Note this controls the *upload*, not just the runtime bundle — anything the
+# build needs must stay. `frontend/src` is compiled during the build, so it is
+# deliberately not listed here.
+
+# Local environments and caches
+backend/.venv/
+**/__pycache__/
+**/*.pyc
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+frontend/node_modules/
+frontend/dist/
+frontend/*.tsbuildinfo
+
+# Local databases — training records must never reach a build log
+backend/rtc.db*
+backend/*.db
+backend/*.db-wal
+backend/*.db-shm
+*.sqlite3
+
+# Not needed to build or serve
+backend/tests/
+docs/
+.github/
+scripts/
+docker-compose.yml
+Makefile
+**/Dockerfile
+frontend/nginx.conf
+backend/docker-entrypoint.sh
+.env
+.env.*

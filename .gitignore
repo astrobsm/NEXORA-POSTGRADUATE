@@ -1,0 +1,45 @@
+# --- Python ---------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# --- Databases (never commit training records) -----------------------------
+*.db
+*.db-wal
+*.db-shm
+*.sqlite3
+backend/rtc.db*
+backend/alembic_scratch.db*
+
+# --- Node ------------------------------------------------------------------
+node_modules/
+dist/
+.vite/
+*.tsbuildinfo
+
+# --- Secrets ---------------------------------------------------------------
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+!frontend/public/**
+
+# --- Editors / OS ----------------------------------------------------------
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.swp
+
+# --- Build output ----------------------------------------------------------
+docs/openapi.json
+uploads/
+artifacts/

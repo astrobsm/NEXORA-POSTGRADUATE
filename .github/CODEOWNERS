@@ -1,0 +1,19 @@
+# Postgraduate Medical Training Console
+# Created and managed by NEXORA Technologies.
+
+* @astrobsm
+
+# The engines decide whether a doctor progresses. Changes here need care.
+/backend/app/services/requirements.py   @astrobsm
+/backend/app/services/scoring.py        @astrobsm
+/backend/app/services/promotion.py      @astrobsm
+/backend/app/core/rbac.py               @astrobsm
+/backend/app/core/security.py           @astrobsm
+
+# Schema changes are irreversible in production.
+/backend/alembic/versions/              @astrobsm
+
+# Deployment and secrets.
+/.github/workflows/                     @astrobsm
+/vercel.json                            @astrobsm
+/LICENSE                                @astrobsm

@@ -1,0 +1,59 @@
+{
+  "name": "Postgraduate Medical Training Console",
+  "short_name": "RTC",
+  "description": "Offline-first competency-based medical education platform for postgraduate residency, internship, fellowship and continuing medical education. Created and managed by NEXORA Technologies.",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f6f8f5",
+  "theme_color": "#166534",
+  "lang": "en-NG",
+  "dir": "ltr",
+  "categories": [
+    "medical",
+    "education",
+    "productivity"
+  ],
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Record a logbook entry",
+      "short_name": "New entry",
+      "description": "Log a case, procedure or clinical activity",
+      "url": "/logbook?new=1"
+    },
+    {
+      "name": "Validation queue",
+      "short_name": "Validate",
+      "description": "Sign off trainee logbook entries",
+      "url": "/validation"
+    }
+  ]
+}

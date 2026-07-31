@@ -1,0 +1,62 @@
+name: Feature request
+description: Something the platform should be able to do
+labels: [enhancement, needs-triage]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before opening this: training requirements, assessment instruments,
+        notification rules and accreditation standards are **configuration**, not
+        features. Check [CONFIGURATION.md](../blob/main/docs/CONFIGURATION.md) —
+        what you need may already be a form field.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: Describe the situation, not the solution you have in mind.
+      placeholder: >-
+        Our college requires trainees to log supervised clinics separately from
+        consultant-led clinics, and we cannot currently distinguish them.
+    validations:
+      required: true
+
+  - type: textarea
+    id: today
+    attributes:
+      label: How do you handle it today?
+      description: Including on paper, or in a spreadsheet.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What kind of change is this?
+      options:
+        - Configuration I could not work out how to express
+        - A new measurement the requirement engine cannot make
+        - A new screen or workflow
+        - An integration with another system
+        - Reporting or export
+        - Not sure
+    validations:
+      required: true
+
+  - type: input
+    id: body
+    attributes:
+      label: Which accrediting body requires it?
+      description: If a college mandates this, cite the guidance — it settles the design.
+      placeholder: NPMCN residency training guidelines §4.2
+
+  - type: dropdown
+    id: scale
+    attributes:
+      label: How many people does this affect?
+      options:
+        - One department
+        - One institution
+        - Every institution using this platform
+    validations:
+      required: true

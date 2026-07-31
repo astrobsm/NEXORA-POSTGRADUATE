@@ -1,0 +1,119 @@
+# Database migrations.
+#
+# Migrations do NOT run inside the Vercel function. A cold deploy can invoke the
+# function concurrently dozens of times, and several processes racing
+# `alembic upgrade head` against the same schema is how a deployment corrupts a
+# database. This workflow is the single place migrations are applied.
+#
+# Created and managed by NEXORA Technologies.
+
+name: Migrate database
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Target environment
+        type: choice
+        options: [staging, production]
+        required: true
+      confirm:
+        description: Type the environment name again to confirm
+        type: string
+        required: true
+  push:
+    branches: [main]
+    paths:
+      - 'backend/alembic/versions/**'
+      - '.github/workflows/migrate.yml'
+
+concurrency:
+  # Never two migrations at once, whatever triggered them.
+  group: migrate-${{ github.event.inputs.environment || 'production' }}
+  cancel-in-progress: false
+
+jobs:
+  migrate:
+    name: Apply migrations
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'production' }}
+
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - name: Confirm the target
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          if [ "${{ github.event.inputs.confirm }}" != "${{ github.event.inputs.environment }}" ]; then
+            echo "::error::Confirmation did not match the selected environment."
+            exit 1
+          fi
+
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+
+      - run: pip install -r requirements.txt
+
+      - name: Verify the connection string
+        env:
+          RTC_DATABASE_URL: ${{ secrets.RTC_DATABASE_URL_SESSION }}
+        run: |
+          if [ -z "$RTC_DATABASE_URL" ]; then
+            echo "::error::RTC_DATABASE_URL_SESSION is not set for this environment."
+            exit 1
+          fi
+          case "$RTC_DATABASE_URL" in
+            *:6543*)
+              echo "::error::That is Supabase's transaction pooler. Alembic needs the"
+              echo "::error::session pooler on port 5432 — transaction mode cannot serve"
+              echo "::error::the multi-statement DDL transactions a migration runs."
+              exit 1 ;;
+          esac
+          echo "Connection string looks correct (session pooler)."
+
+      - name: Show pending migrations
+        env:
+          RTC_DATABASE_URL: ${{ secrets.RTC_DATABASE_URL_SESSION }}
+          RTC_SECRET_KEY: ${{ secrets.RTC_SECRET_KEY }}
+        run: |
+          echo "Current revision:"
+          python -m alembic current
+          echo ""
+          echo "Pending:"
+          python -m alembic history --indicate-current | head -20
+
+      - name: Apply
+        env:
+          RTC_DATABASE_URL: ${{ secrets.RTC_DATABASE_URL_SESSION }}
+          RTC_SECRET_KEY: ${{ secrets.RTC_SECRET_KEY }}
+          RTC_ENV: production
+        run: python -m alembic upgrade head
+
+      - name: Verify no drift remains
+        env:
+          RTC_DATABASE_URL: ${{ secrets.RTC_DATABASE_URL_SESSION }}
+          RTC_SECRET_KEY: ${{ secrets.RTC_SECRET_KEY }}
+        run: python -m alembic check
+
+      - name: Summary
+        if: always()
+        env:
+          RTC_DATABASE_URL: ${{ secrets.RTC_DATABASE_URL_SESSION }}
+          RTC_SECRET_KEY: ${{ secrets.RTC_SECRET_KEY }}
+        run: |
+          {
+            echo "### Migration complete"
+            echo ""
+            echo "Environment: \`${{ github.event.inputs.environment || 'production' }}\`"
+            echo ""
+            echo '```'
+            python -m alembic current 2>&1 || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"

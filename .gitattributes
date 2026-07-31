@@ -1,0 +1,53 @@
+# Normalise line endings so a Windows checkout does not produce artefacts that
+# fail on Linux. This is not cosmetic: a shell script or Docker entrypoint with
+# CRLF endings fails inside a container with a baffling
+# "/usr/bin/env: 'sh\r': No such file or directory".
+
+* text=auto eol=lf
+
+# Must be LF — they are executed by a Linux shell.
+*.sh            text eol=lf
+docker-entrypoint.sh text eol=lf
+Makefile        text eol=lf
+Dockerfile      text eol=lf
+*.Dockerfile    text eol=lf
+
+# Source and configuration
+*.py            text eol=lf
+*.ts            text eol=lf
+*.tsx           text eol=lf
+*.js            text eol=lf
+*.jsx           text eol=lf
+*.json          text eol=lf
+*.yml           text eol=lf
+*.yaml          text eol=lf
+*.css           text eol=lf
+*.html          text eol=lf
+*.md            text eol=lf
+*.toml          text eol=lf
+*.cfg           text eol=lf
+*.ini           text eol=lf
+*.mako          text eol=lf
+*.svg           text eol=lf
+*.webmanifest   text eol=lf
+.env.example    text eol=lf
+.gitignore      text eol=lf
+.vercelignore   text eol=lf
+
+# Binary — never touch
+*.png           binary
+*.jpg           binary
+*.jpeg          binary
+*.webp          binary
+*.gif           binary
+*.ico           binary
+*.woff          binary
+*.woff2         binary
+*.pdf           binary
+*.db            binary
+
+# Generated: collapse in diffs and exclude from language statistics.
+frontend/package-lock.json  linguist-generated=true -diff
+backend/alembic/versions/*.py linguist-generated=true
+
+docs/**         linguist-documentation=true

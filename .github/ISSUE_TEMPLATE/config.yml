@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/astrobsm/NEXORA-POSTGRADUATE/security/advisories/new
+    about: Report privately. Never in a public issue.
+  - name: Can the platform express my college's rules?
+    url: https://github.com/astrobsm/NEXORA-POSTGRADUATE/blob/main/docs/CONFIGURATION.md
+    about: Almost always yes, and without a code change. Read this first.
+  - name: Deployment help
+    url: https://github.com/astrobsm/NEXORA-POSTGRADUATE/blob/main/docs/DEPLOYMENT_VERCEL.md
+    about: Vercel and Supabase setup, step by step.

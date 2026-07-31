@@ -1,0 +1,102 @@
+name: Bug report
+description: Something behaves incorrectly
+labels: [bug, needs-triage]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Do not report a security vulnerability here.** Use
+        Security → Report a vulnerability. See [SECURITY.md](../blob/main/SECURITY.md).
+
+        **Never paste real training records, patient details or credentials.**
+
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you expected, and what happened instead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Sign in as a Registrar
+        2. Logbook → New entry, type "Major procedure"
+        3. Save
+        4. The entry shows as validated rather than pending
+    validations:
+      required: true
+
+  - type: input
+    id: request_id
+    attributes:
+      label: Request reference
+      description: >-
+        Every response carries an `X-Request-Id`, and an error message quotes one.
+        It links your report to the exact server log line.
+      placeholder: 4f2a9c1e7b3d0a86
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Logbook / validation
+        - Rotations
+        - Assessment / competencies
+        - Analytics / scores
+        - Promotion
+        - Accreditation
+        - Curriculum builder
+        - Academic activities / CME
+        - Research / dissertation
+        - Offline sync
+        - Branding
+        - Authentication / permissions
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: role
+    attributes:
+      label: Which role were you signed in as?
+      description: Most access-related behaviour depends on this.
+      options:
+        - Trainee (house officer, registrar, senior registrar)
+        - Consultant / supervisor
+        - Head of Department / coordinator
+        - Director of Residency / CMD / institution leadership
+        - Platform administrator
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Shown under Account → About this platform.
+      placeholder: 1.0.0
+
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Environment
+      options:
+        - Production (Vercel)
+        - Staging / preview
+        - Docker Compose
+        - Local development
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: offline
+    attributes:
+      label: Connectivity
+      options:
+        - label: This happened while offline or on an unreliable connection
+        - label: There were entries queued for sync at the time

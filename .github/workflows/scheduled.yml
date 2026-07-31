@@ -1,0 +1,122 @@
+# Scheduled maintenance.
+#
+# These jobs exist here rather than in the application because they cannot run in
+# a serverless function: recomputing a cohort's scorecards iterates every active
+# trainee and evaluates every requirement rule against each, which exceeds the
+# function timeout on any Vercel plan long before it exceeds the database's
+# patience.
+#
+# They call the deployed API over HTTPS with a service account, so they exercise
+# exactly the same code path a human would.
+#
+# Created and managed by NEXORA Technologies.
+
+name: Scheduled maintenance
+
+on:
+  schedule:
+    # 02:15 UTC — 03:15 in Lagos, comfortably outside the working day.
+    - cron: '15 2 * * *'
+  workflow_dispatch:
+    inputs:
+      task:
+        description: Which task to run
+        type: choice
+        options: [all, rotations, scores]
+        default: all
+
+concurrency:
+  group: scheduled-maintenance
+  cancel-in-progress: false
+
+jobs:
+  maintenance:
+    name: Nightly maintenance
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Sign in as the service account
+        id: auth
+        env:
+          BASE_URL: ${{ secrets.RTC_BASE_URL }}
+          EMAIL: ${{ secrets.RTC_SERVICE_EMAIL }}
+          PASSWORD: ${{ secrets.RTC_SERVICE_PASSWORD }}
+        run: |
+          set -euo pipefail
+          if [ -z "${BASE_URL:-}" ]; then
+            echo "::error::RTC_BASE_URL is not set."
+            exit 1
+          fi
+
+          response=$(curl -sS -X POST "$BASE_URL/api/v1/auth/login" \
+            -H 'Content-Type: application/json' \
+            -d "{\"email\":\"$EMAIL\",\"password\":\"$PASSWORD\"}")
+
+          token=$(echo "$response" | jq -r '.access_token // empty')
+          if [ -z "$token" ]; then
+            # Never echo the response — it may carry a challenge token.
+            echo "::error::Sign-in failed. Check the service account credentials,"
+            echo "::error::and that it does not have MFA enabled (a scheduled job"
+            echo "::error::cannot complete a TOTP challenge)."
+            exit 1
+          fi
+          echo "::add-mask::$token"
+          echo "token=$token" >> "$GITHUB_OUTPUT"
+          echo "Signed in."
+
+      - name: Advance rotation statuses
+        if: ${{ github.event.inputs.task != 'scores' }}
+        env:
+          BASE_URL: ${{ secrets.RTC_BASE_URL }}
+          TOKEN: ${{ steps.auth.outputs.token }}
+        run: |
+          set -euo pipefail
+          result=$(curl -sS -X POST \
+            "$BASE_URL/api/v1/training/maintenance/refresh-rotation-statuses" \
+            -H "Authorization: Bearer $TOKEN")
+          echo "$result" | jq .
+          {
+            echo "### Rotations"
+            echo ""
+            echo "- Activated: $(echo "$result" | jq -r '.activated')"
+            echo "- Awaiting sign-off: $(echo "$result" | jq -r '.awaiting_signoff')"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Recompute scorecards
+        if: ${{ github.event.inputs.task != 'rotations' }}
+        env:
+          BASE_URL: ${{ secrets.RTC_BASE_URL }}
+          TOKEN: ${{ steps.auth.outputs.token }}
+        run: |
+          set -euo pipefail
+          # A generous client timeout: this is the long job, and the whole reason
+          # it lives in CI rather than in a serverless function.
+          result=$(curl -sS --max-time 900 -X POST \
+            "$BASE_URL/api/v1/analytics/score/recompute" \
+            -H "Authorization: Bearer $TOKEN")
+
+          scored=$(echo "$result" | jq -r '.scored')
+          echo "Scored $scored trainee(s)."
+
+          {
+            echo ""
+            echo "### Scorecards"
+            echo ""
+            echo "Recomputed: **$scored**"
+            echo ""
+            echo "| Trainee | Score | Status | Gaps |"
+            echo "|---|---:|---|---:|"
+            echo "$result" | jq -r '.results[] | "| \(.trainee // "—") | \(.overall_score) | \(.rag) | \(.gaps) |"' | head -40
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Report failure
+        if: failure()
+        run: |
+          {
+            echo "### Nightly maintenance failed"
+            echo ""
+            echo "Dashboards will show yesterday's scores until this succeeds."
+            echo "Detail views always recompute live, so trainee-facing accuracy is"
+            echo "unaffected — only cohort lists go stale."
+          } >> "$GITHUB_STEP_SUMMARY"
