@@ -22,7 +22,7 @@ pyotp>=2.9
 cryptography>=44.0
 
 # --- Object storage --------------------------------------------------------
-boto3>=1.35
+boto3>=1.43.58
 
 # --- AI-assisted authoring -------------------------------------------------
 # Optional at runtime. With RTC_ENABLE_AI_GENERATION unset the platform uses a
