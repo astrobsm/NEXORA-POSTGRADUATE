@@ -9,7 +9,7 @@
 # Keep the version ranges in step with backend/requirements.txt.
 # --------------------------------------------------------------------------
 
-fastapi>=0.115,<0.121
+fastapi>=0.140.13,<0.141
 python-multipart>=0.0.20
 
 SQLAlchemy>=2.0.36,<2.1
