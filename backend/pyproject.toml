@@ -3,8 +3,8 @@ name = "nexora-postgraduate-console"
 version = "1.0.0"
 description = "Postgraduate Medical Training Console — offline-first competency-based medical education platform"
 requires-python = ">=3.11"
-license = { text = "Proprietary — © NEXORA Technologies" }
-authors = [{ name = "NEXORA Technologies" }]
+license = { text = "Proprietary — © NEXORA Innovations" }
+authors = [{ name = "NEXORA Innovations" }]
 
 [project.urls]
 Homepage = "https://github.com/astrobsm/NEXORA-POSTGRADUATE"

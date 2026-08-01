@@ -32,9 +32,9 @@ class Settings(BaseSettings):
     api_v1_prefix: str = "/api/v1"
 
     # ---- Vendor ---------------------------------------------------------
-    vendor_name: str = "NEXORA Technologies"
+    vendor_name: str = "NEXORA Innovations"
     vendor_url: str = "https://github.com/astrobsm/NEXORA-POSTGRADUATE"
-    vendor_statement: str = "Created and managed by NEXORA Technologies."
+    vendor_statement: str = "Created and managed by NEXORA Innovations."
 
     # ---- Database -------------------------------------------------------
     # SQLite by default so the platform runs with zero infrastructure.

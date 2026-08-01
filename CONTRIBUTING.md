@@ -1,6 +1,6 @@
 # Contributing
 
-Postgraduate Medical Training Console — created and managed by **NEXORA Technologies**.
+Postgraduate Medical Training Console — created and managed by **NEXORA Innovations**.
 
 ---
 
@@ -133,4 +133,4 @@ Do **not** open a public issue. See [SECURITY.md](SECURITY.md).
 
 ---
 
-© NEXORA Technologies. See [LICENSE](LICENSE) — this is proprietary software.
+© NEXORA Innovations. See [LICENSE](LICENSE) — this is proprietary software.

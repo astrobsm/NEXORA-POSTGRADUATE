@@ -10,8 +10,8 @@
  */
 
 export const VENDOR = {
-  name: 'NEXORA Technologies',
-  statement: 'Created and managed by NEXORA Technologies',
+  name: 'NEXORA Innovations',
+  statement: 'Created and managed by NEXORA Innovations',
   url: 'https://github.com/astrobsm/NEXORA-POSTGRADUATE',
   productName: 'Postgraduate Medical Training Console',
   shortName: 'RTC',

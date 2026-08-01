@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """Create the first institution and its administrator.
 
-Created and managed by NEXORA Technologies.
+Created and managed by NEXORA Innovations.
 
 Production deployments never run the demo seeder, so a fresh database has
 reference data but no institution and no way in. This creates both::
@@ -77,7 +77,7 @@ def prompt_password() -> str:
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="Create the first institution and administrator.",
-        epilog="Created and managed by NEXORA Technologies.",
+        epilog="Created and managed by NEXORA Innovations.",
     )
     parser.add_argument("--institution", required=True, help="Full institution name.")
     parser.add_argument("--code", required=True, help="Short code, e.g. FMC-OWE.")

@@ -9,7 +9,7 @@
 # They call the deployed API over HTTPS with a service account, so they exercise
 # exactly the same code path a human would.
 #
-# Created and managed by NEXORA Technologies.
+# Created and managed by NEXORA Innovations.
 
 name: Scheduled maintenance
 

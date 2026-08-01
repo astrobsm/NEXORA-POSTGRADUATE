@@ -133,16 +133,16 @@ class TestPoolerDetection:
 class TestVendorIdentity:
     def test_attribution_is_configured(self):
         settings = Settings(secret_key="t")
-        assert settings.vendor_name == "NEXORA Technologies"
-        assert "NEXORA Technologies" in settings.vendor_statement
+        assert settings.vendor_name == "NEXORA Innovations"
+        assert "NEXORA Innovations" in settings.vendor_statement
 
     def test_attribution_reaches_the_api_surface(self, client):
         """The vendor statement must survive into what a consumer actually sees."""
         response = client.get("/")
         assert response.status_code == 200
-        assert response.json()["vendor"]["name"] == "NEXORA Technologies"
+        assert response.json()["vendor"]["name"] == "NEXORA Innovations"
 
         schema = client.get("/api/v1/openapi.json").json()
-        assert schema["info"]["contact"]["name"] == "NEXORA Technologies"
-        assert "NEXORA Technologies" in schema["info"]["description"]
-        assert "NEXORA Technologies" in schema["info"]["license"]["name"]
+        assert schema["info"]["contact"]["name"] == "NEXORA Innovations"
+        assert "NEXORA Innovations" in schema["info"]["description"]
+        assert "NEXORA Innovations" in schema["info"]["license"]["name"]

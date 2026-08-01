@@ -3,9 +3,9 @@ PROPRIETARY SOFTWARE LICENCE
 Postgraduate Medical Training Console (also referred to as the Residency
 Training Console, "RTC")
 
-Copyright © 2026 NEXORA Technologies. All rights reserved.
+Copyright © 2026 NEXORA Innovations. All rights reserved.
 
-Created and managed by NEXORA Technologies.
+Created and managed by NEXORA Innovations.
 
 -------------------------------------------------------------------------------
 
@@ -13,13 +13,13 @@ Created and managed by NEXORA Technologies.
 
    This software, including its source code, database schema, documentation,
    design system and all associated materials (collectively, "the Software"),
-   is the exclusive property of NEXORA Technologies.
+   is the exclusive property of NEXORA Innovations.
 
 2. GRANT
 
    No licence to use, copy, modify, merge, publish, distribute, sublicense or
    sell the Software is granted except under a separate written agreement
-   executed by NEXORA Technologies.
+   executed by NEXORA Innovations.
 
    Institutions holding such an agreement are granted a non-exclusive,
    non-transferable right to operate the Software for the internal purpose of
@@ -31,7 +31,7 @@ Created and managed by NEXORA Technologies.
    Except as expressly permitted by a written agreement, you may not:
 
    (a) redistribute the Software or make it available to any third party;
-   (b) remove, obscure or alter any attribution to NEXORA Technologies
+   (b) remove, obscure or alter any attribution to NEXORA Innovations
        appearing in the interface, the API, the documentation or this file;
    (c) use the Software to provide a competing service to third parties;
    (d) reverse engineer the Software except to the extent that restriction is
@@ -39,7 +39,7 @@ Created and managed by NEXORA Technologies.
 
 4. DATA
 
-   NEXORA Technologies asserts no ownership over the training records, logbook
+   NEXORA Innovations asserts no ownership over the training records, logbook
    entries, assessments, curricula or institutional data that a licensed
    institution enters into the Software. That data belongs to the institution.
 
@@ -51,7 +51,7 @@ Created and managed by NEXORA Technologies.
 
 6. LIMITATION OF LIABILITY
 
-   IN NO EVENT SHALL NEXORA TECHNOLOGIES BE LIABLE FOR ANY CLAIM, DAMAGES OR
+   IN NO EVENT SHALL NEXORA INNOVATIONS BE LIABLE FOR ANY CLAIM, DAMAGES OR
    OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
    ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR ITS USE.
 

@@ -31,7 +31,7 @@
         { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
         { "key": "Permissions-Policy", "value": "geolocation=(self), camera=(), microphone=()" },
         { "key": "Strict-Transport-Security", "value": "max-age=31536000; includeSubDomains" },
-        { "key": "X-Powered-By", "value": "NEXORA Technologies" }
+        { "key": "X-Powered-By", "value": "NEXORA Innovations" }
       ]
     },
     {

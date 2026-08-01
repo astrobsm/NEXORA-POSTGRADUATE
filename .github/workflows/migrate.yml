@@ -5,7 +5,7 @@
 # `alembic upgrade head` against the same schema is how a deployment corrupts a
 # database. This workflow is the single place migrations are applied.
 #
-# Created and managed by NEXORA Technologies.
+# Created and managed by NEXORA Innovations.
 
 name: Migrate database
 

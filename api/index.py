@@ -1,6 +1,6 @@
 """Vercel serverless entrypoint for the Postgraduate Medical Training Console API.
 
-Created and managed by NEXORA Technologies.
+Created and managed by NEXORA Innovations.
 
 Vercel's Python runtime discovers an ASGI application exported as ``app`` from a
 module under ``/api``. The application itself lives in ``/backend`` so that it

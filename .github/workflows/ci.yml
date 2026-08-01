@@ -191,7 +191,7 @@ jobs:
           spec.loader.exec_module(module)
           schema = module.app.openapi()
           print(f"{len(schema['paths'])} routes")
-          assert schema["info"]["contact"]["name"] == "NEXORA Technologies"
+          assert schema["info"]["contact"]["name"] == "NEXORA Innovations"
           EOF
 
       - name: Serverless database strategy is correct

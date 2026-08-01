@@ -32,4 +32,4 @@
 
 ---
 
-*Postgraduate Medical Training Console — created and managed by NEXORA Technologies.*
+*Postgraduate Medical Training Console — created and managed by NEXORA Innovations.*

@@ -1,6 +1,6 @@
 # Deploying on Vercel with Supabase
 
-Created and managed by **NEXORA Technologies**.
+Created and managed by **NEXORA Innovations**.
 
 ---
 
@@ -305,4 +305,4 @@ department on it.
 
 ---
 
-*Postgraduate Medical Training Console — created and managed by NEXORA Technologies.*
+*Postgraduate Medical Training Console — created and managed by NEXORA Innovations.*

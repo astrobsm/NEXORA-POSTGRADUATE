@@ -3,9 +3,9 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "Postgraduate Medical Training Console - offline-first competency-based medical education platform. Created and managed by NEXORA Technologies.",
+  "description": "Postgraduate Medical Training Console - offline-first competency-based medical education platform. Created and managed by NEXORA Innovations.",
   "author": {
-    "name": "NEXORA Technologies",
+    "name": "NEXORA Innovations",
     "url": "https://github.com/astrobsm/NEXORA-POSTGRADUATE"
   },
   "license": "UNLICENSED",

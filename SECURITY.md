@@ -1,6 +1,6 @@
 # Security policy
 
-Postgraduate Medical Training Console — created and managed by **NEXORA Technologies**.
+Postgraduate Medical Training Console — created and managed by **NEXORA Innovations**.
 
 Full technical detail is in [docs/SECURITY.md](docs/SECURITY.md). This file is the
 reporting policy.
@@ -72,4 +72,4 @@ Stated so nobody reports them as discoveries — they are documented deliberatel
 
 ---
 
-© NEXORA Technologies.
+© NEXORA Innovations.

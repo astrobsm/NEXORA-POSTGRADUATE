@@ -3,7 +3,7 @@
 # Only runs after CI passes. Vercel's own Git integration is disabled in
 # vercel.json (`github.silent`) so that a red test suite cannot reach production.
 #
-# Created and managed by NEXORA Technologies.
+# Created and managed by NEXORA Innovations.
 
 name: Deploy
 
@@ -118,5 +118,5 @@ jobs:
             echo "Migrations are **not** applied by this workflow. If this release"
             echo "includes a schema change, run **Migrate database** first."
             echo ""
-            echo "_Created and managed by NEXORA Technologies._"
+            echo "_Created and managed by NEXORA Innovations._"
           } >> "$GITHUB_STEP_SUMMARY"

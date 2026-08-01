@@ -1,6 +1,6 @@
 # Adaptive learning, CBT, and AI-assisted authoring
 
-*Postgraduate Medical Training Console — created and managed by NEXORA Technologies.*
+*Postgraduate Medical Training Console — created and managed by NEXORA Innovations.*
 
 This document covers the examination and learning-analytics subsystem: how a
 paper is assembled and sat, how the Examination Readiness Score is computed,
@@ -406,4 +406,4 @@ questions rather than departmental ones.
 
 ---
 
-*Created and managed by NEXORA Technologies.*
+*Created and managed by NEXORA Innovations.*

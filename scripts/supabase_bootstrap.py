@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """Prepare a Supabase database for the Postgraduate Medical Training Console.
 
-Created and managed by NEXORA Technologies.
+Created and managed by NEXORA Innovations.
 
 Run this once, from your machine or from CI, against a fresh Supabase project::
 
@@ -172,7 +172,7 @@ def report() -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="Prepare a Supabase database for the Postgraduate Medical Training Console.",
-        epilog="Created and managed by NEXORA Technologies.",
+        epilog="Created and managed by NEXORA Innovations.",
     )
     parser.add_argument("--reference-data", action="store_true",
                         help="Load permissions, roles, specialties and accreditation standards.")

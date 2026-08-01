@@ -11,7 +11,7 @@ and national residency authorities.
 [![Deploy](https://github.com/astrobsm/NEXORA-POSTGRADUATE/actions/workflows/deploy.yml/badge.svg)](https://github.com/astrobsm/NEXORA-POSTGRADUATE/actions/workflows/deploy.yml)
 [![Licence](https://img.shields.io/badge/licence-proprietary-166534)](LICENSE)
 
-**Created and managed by [NEXORA Technologies](https://github.com/astrobsm/NEXORA-POSTGRADUATE)**
+**Created and managed by [NEXORA Innovations](https://github.com/astrobsm/NEXORA-POSTGRADUATE)**
 
 </div>
 
@@ -195,9 +195,9 @@ never a public issue.
 
 <div align="center">
 
-**Created and managed by NEXORA Technologies**
+**Created and managed by NEXORA Innovations**
 
-Proprietary software. © 2026 NEXORA Technologies. See [LICENSE](LICENSE).
+Proprietary software. © 2026 NEXORA Innovations. See [LICENSE](LICENSE).
 
 *Manages postgraduate training records. Not a medical device. Holds no
 patient-identifiable data.*
